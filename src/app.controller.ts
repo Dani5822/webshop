@@ -18,9 +18,9 @@ export class AppController {
   @Get("webshop")
   @Render("webshop")
   webshopform() {
-    return{
-      errors:[],
-      order:{}
+    return {
+      errors: [],
+      order: {}
     }
   }
 
@@ -48,22 +48,30 @@ export class AppController {
       expiredate: webshop.expiredate,
       cvc: webshop.cvc,
     }
-    if(errors.length>0){
-      return{
-        errors,
-        order:neworder
+    try {
+      if (Date.parse(neworder.expiredate)<Date.now()) {
+        errors.push("Ez a kártya már lejárt!")
       }
-    }else{
+    } catch (error) {
+      errors.push("Nem jó dátum formátum.")
+    }
+    
+    if (errors.length > 0) {
+      return {
+        errors,
+        order: neworder
+      }
+    } else {
       console.log(neworder)
-    this.#orders.push(neworder)
-    response.redirect(303,'/success')
+      this.#orders.push(neworder)
+      response.redirect(303, '/success')
+    }
   }
-}
-@Get('success')
+  @Get('success')
   @Render('success')
-  newaccountsuccess(){
-    return{
-      accounts:this.#orders.length
+  newaccountsuccess() {
+    return {
+      accounts: this.#orders.length
     }
   }
 
